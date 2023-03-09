@@ -26,7 +26,7 @@ public class UsuarioRepository {
             }
             return null;
         } catch (SQLException e) {
-            throw new BancoDeDadosException("Erro ao buscar sequence de posto" + e);
+            throw new BancoDeDadosException("Erro ao buscar sequence de posto");
         }
     }
 
@@ -54,7 +54,7 @@ public class UsuarioRepository {
         return ;
     }
 
-    public UsuarioDTO adicionar(UsuarioCreateDTO usuarioCreateDTO) throws BancoDeDadosException {
+    public Usuario adicionar(UsuarioCreateDTO usuarioCreateDTO) throws BancoDeDadosException {
         Connection con = null;
         try {
             con = ConexaoBancoDeDados.getConnection();
@@ -67,13 +67,25 @@ public class UsuarioRepository {
                         VALUES(?, ?, ?, ?, ?, ?, ?)
                     """;
             PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setInt(1, getProximoId());////
-            stmt.setString(2, usuarioCreateDTO.getCpf());///
-            stmt.setString(3, usuarioCreateDTO.getNome());
+            stmt.setInt(1, proximoId);
+            stmt.setString(2, usuarioCreateDTO.getNome());
+            stmt.setDate(3, Date.valueOf(usuarioCreateDTO.getDataNascimento()));
+            stmt.setString(4, usuarioCreateDTO.getSenhha());
+            stmt.setDate(5, Date.valueOf(usuarioCreateDTO.getDataCriacao()));
+
+            if(usuarioCreateDTO.getAtivo()) {
+                stmt.setInt(6, 1);
+            } else {
+                stmt.setInt(6, 0);
+            }
+
+            stmt.setInt(7, usuarioCreateDTO.getTipo().getTipo());
+
 
             // Executar consulta
-            stmt.executeUpdate();
-            return usuarioCreateDTO;
+            ResultSet resultSet = stmt.executeQuery(sql);
+
+
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getCause());
         } finally {
@@ -92,5 +104,28 @@ public class UsuarioRepository {
 
     public UsuarioDTO atualizar(Integer id, UsuarioCreateDTO usuarioCreateDTO) {
         return ;
+    }
+
+    private Usuario getUsuarioFromResultSet(ResultSet res) throws SQLException {
+
+        Usuario usuario = new Usuario;
+        usuario.setId(res.getInt("id"));
+        usuario.setNome(res.getString("nome"));
+        usuario.setDataNascimento(res.getDate("data_nascimento").toLocalDate());
+        usuario.setSenha(res.getString("senha"));
+        usuario.setDataCriacao(res.getDate("data_criacao").toLocalDate());
+
+        if(res.getInt("ativo") == 1) {
+            usuario.setAtivo(true);
+        } else {
+            usuario.setAtivo(false);
+        }
+
+        if(res.getInt("tipo") == 1) {
+            usuario.setTipo(TipoUsuario.ADMIN);
+        } else {
+            usuario.setTipo(TipoUsuario.NORMAL);
+        }
+        return usuario;
     }
 }
