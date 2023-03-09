@@ -2,9 +2,11 @@ package com.dbccompany.codingdojo.codingdojo.dto;
 
 import com.dbccompany.codingdojo.codingdojo.model.TipoUsuario;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
+@RequiredArgsConstructor
 @Data
 public class UsuarioCreateDTO {
 
