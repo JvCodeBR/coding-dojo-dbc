@@ -39,11 +39,16 @@ public class UsuarioService {
         this.usuarioRepository.delete(id);
     }
 
-    public List<UsuarioDTO> listar() {
-//        return usuarioRepository.list().stream()
-//                .map(usuario-> objectMapper.convertValue(usuario, UsuarioDTO.class))
-//                .collect(Collectors.toList());
-        return null;
+    public List<UsuarioDTO> listar() throws RegraDeNegociosException {
+       try {
+           return usuarioRepository.listar().stream()
+                   .map(usuario-> objectMapper.convertValue(usuario, UsuarioDTO.class))
+                   .collect(Collectors.toList());
+
+       } catch (BancoDeDadosException e){
+           e.printStackTrace();
+           throw new RegraDeNegociosException("Erro no banco!");
+       }
     }
 
     public UsuarioDTO listarMaiorDeIdade() {

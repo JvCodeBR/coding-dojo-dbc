@@ -8,6 +8,7 @@ import com.dbccompany.codingdojo.codingdojo.model.Usuario;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,8 +47,37 @@ public class UsuarioRepository {
         ;
     }
 
-    public List<UsuarioDTO> listar() {
-        return null;
+    public List<Usuario> listar() throws BancoDeDadosException {
+        List<Usuario> usuarios = new ArrayList<>();
+        Connection con = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+            Statement stmt = con.createStatement();
+
+            String sql = "SELECT * " +
+                    "FROM USUARIO" ;
+
+            // Executa-se a consulta
+            ResultSet res = stmt.executeQuery(sql);
+
+            while (res.next()) {
+                Usuario usuario = getUsuarioFromResultSet(res);
+                usuarios.add(usuario);
+            }
+            return usuarios;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new BancoDeDadosException(e.getMessage());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public UsuarioDTO listarMaiorDeIdade() {
@@ -63,7 +93,7 @@ public class UsuarioRepository {
             usuario.setId(this.getProximoId(con));
             String sql = """
                     INSERT INTO USUARIO
-                                (ID, NOME, DATANASCIMENTO, SENHA, DATACRIACAO, ATIVO, TIPO)
+                                (ID, NOME, DATA_NASCIMENTO, SENHA, DATA_CRIACAO, ATIVO, TIPO)
                         VALUES(?, ?, ?, ?, ?, ?, ?)
                     """;
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -87,6 +117,7 @@ public class UsuarioRepository {
 
             return usuario;
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {

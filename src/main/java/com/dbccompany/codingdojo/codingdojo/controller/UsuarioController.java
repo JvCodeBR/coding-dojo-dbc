@@ -22,7 +22,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>>  listar() {
+    public ResponseEntity<List<UsuarioDTO>>  listar() throws RegraDeNegociosException {
         return ResponseEntity.ok(usuarioService.listar());
     }
 

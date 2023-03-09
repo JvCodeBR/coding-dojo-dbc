@@ -14,7 +14,7 @@ public class UsuarioCreateDTO {
     private String nome;
     private String email;
     private LocalDate dataNascimento;
-    private String senhha;
+    private String senha;
     private LocalDate dataCriacao;
     private Boolean ativo;
     private TipoUsuario tipo;
