@@ -1,9 +1,12 @@
 package com.dbccompany.codingdojo.codingdojo.controller;
 
+import com.dbccompany.codingdojo.codingdojo.dto.UsuarioDTO;
 import com.dbccompany.codingdojo.codingdojo.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuario")
@@ -38,7 +41,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> delete(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(usuarioService.delete(id));
     }
 
