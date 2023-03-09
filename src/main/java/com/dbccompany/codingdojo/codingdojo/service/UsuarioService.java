@@ -26,17 +26,22 @@ public class UsuarioService {
         return null;
     }
 
-    public List<UsuarioDTO> listaPorId(Integer id) {
-//        return this.usuarioRepository.listarPorId(id);
-        return null;
+    public UsuarioDTO listaPorId(Integer id) throws BancoDeDadosException {
+        return objectMapper.convertValue(usuarioRepository.listarPorID(id),UsuarioDTO.class);
     }
 
     public List<UsuarioDTO> listaPorTipo(TipoUsuario tipo) {
         return this.usuarioRepository.listaPorTipo(tipo);
     }
 
-    public void delete(Integer id) {
-        this.usuarioRepository.delete(id);
+    public boolean delete(Integer id) throws RegraDeNegociosException {
+        try {
+            return this.usuarioRepository.delete(id);
+        } catch (BancoDeDadosException e){
+            e.printStackTrace();
+            throw new RegraDeNegociosException("Erro no banco!");
+        }
+
     }
 
     public List<UsuarioDTO> listar() throws RegraDeNegociosException {
@@ -51,9 +56,9 @@ public class UsuarioService {
        }
     }
 
-    public UsuarioDTO listarMaiorDeIdade() {
-        return this.usuarioRepository.listarMaiorDeIdade();
-    }
+   /* public List<UsuarioDTO> listarMaiorDeIdade() throws BancoDeDadosException {
+        //return this.usuarioRepository.listarMaiorDeIdade();
+    }*/
 
     public UsuarioDTO adicionar(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegociosException {
         try {
@@ -65,7 +70,13 @@ public class UsuarioService {
         }
     }
 
-    public UsuarioDTO atualizar(Integer id, UsuarioCreateDTO usuarioCreateDTO) {
-        return this.usuarioRepository.atualizar(id, usuarioCreateDTO);
+    public UsuarioDTO atualizar(Integer id, UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegociosException {
+        try {
+            Usuario usuario = objectMapper.convertValue(usuarioCreateDTO, Usuario.class);
+            return objectMapper.convertValue(usuarioRepository.atualizar(id, usuario), UsuarioDTO.class);
+        } catch (BancoDeDadosException e) {
+            throw new RegraDeNegociosException("Erro no banco!");
+        }
+
     }
 }

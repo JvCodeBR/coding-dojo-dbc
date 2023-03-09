@@ -27,12 +27,11 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> listarPorId(@PathVariable("id") Integer id) {
-//        return ResponseEntity.ok(usuarioService.listaPorId(id));
-        return null;
+    public ResponseEntity<UsuarioDTO> listarPorId(@PathVariable("id") Integer id) throws BancoDeDadosException {
+        return ResponseEntity.ok(usuarioService.listaPorId(id));
     }
 
-    @GetMapping("/{tipo}")
+    @GetMapping("/{tipo}/tipo")
     public ResponseEntity<List<UsuarioDTO>> listarPorTipo(@PathVariable("tipo") String tipo) {
 //        return ResponseEntity.ok(usuarioService.listaPorTipo(tipo));
         return null;
@@ -50,9 +49,8 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Integer id) {
-//        return ResponseEntity.ok(usuarioService.delete(id));
-//        return null;
+    public ResponseEntity<Boolean> delete(@PathVariable("id") Integer id) throws RegraDeNegociosException {
+        return ResponseEntity.ok(usuarioService.delete(id));
     }
 
 
@@ -62,7 +60,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable("id") Integer id, @Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) {
+    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable("id") Integer id, @Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegociosException {
         return ResponseEntity.ok(usuarioService.atualizar(id, usuarioCreateDTO));
     }
 

@@ -35,16 +35,67 @@ public class UsuarioRepository {
         return null;
     }
 
-    public List<UsuarioDTO> listaPorId(Integer id) {
-        return null;
+    public Usuario listarPorID(Integer id) throws BancoDeDadosException {
+        Usuario usuario = null;
+        Connection con = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+
+            String sql = "SELECT * " +
+                    "FROM USUARIO WHERE ID = ?";
+
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
+
+            // Executa-se a consulta
+            ResultSet res = stmt.executeQuery();
+
+            if (res.next()) {
+                usuario = getUsuarioFromResultSet(res);
+            }
+
+            return usuario;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new BancoDeDadosException("Erro no Banco!");
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public List<UsuarioDTO> listaPorTipo(TipoUsuario tipo) {
         return null;
     }
 
-    public void delete(Integer id) {
-        ;
+    public boolean delete(Integer id) throws BancoDeDadosException {
+        Connection con = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+
+            String sql = "UPDATE USUARIO u SET u.ATIVO = 0 WHERE u.ID = ? ";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
+
+            // Executar consulta
+            int res = stmt.executeUpdate();
+            return res > 0;
+        } catch (SQLException e) {
+            throw new BancoDeDadosException("Erro no banco");
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public List<Usuario> listar() throws BancoDeDadosException {
@@ -80,8 +131,39 @@ public class UsuarioRepository {
         }
     }
 
-    public UsuarioDTO listarMaiorDeIdade() {
-        return null;
+    public List<Usuario> listarMaiorDeIdade() throws BancoDeDadosException {
+        List<Usuario> usuarios = new ArrayList<>();
+        Connection con = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+            Statement stmt = con.createStatement();
+
+            String sql = """
+                    SELECT u.ID, u.NOME, u.DATA_NASCIMENTO, u.SENHA, u.DATA_CRIACAO, u.ATIVO,
+                    u.TIPO
+                    FROM USUARIO u WHERE MONTHS_BETWEEN(SYSDATE, u.DATA_NASCIMENTO)/12 >= 18;""";
+
+            // Executa-se a consulta
+            ResultSet res = stmt.executeQuery(sql);
+
+            while (res.next()) {
+                Usuario usuario = getUsuarioFromResultSet(res);
+                usuarios.add(usuario);
+            }
+            return usuarios;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new BancoDeDadosException(e.getMessage());
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public Usuario adicionar(Usuario usuario) throws BancoDeDadosException {
@@ -133,8 +215,88 @@ public class UsuarioRepository {
             (ID, NOME, DATANASCIMENTO, SENHA, DATACRIACAO, ATIVO, TIPO)
     VALUES(0, ?, ?, ?, ?, ?, ?);*/
 
-    public UsuarioDTO atualizar(Integer id, UsuarioCreateDTO usuarioCreateDTO) {
-        return null;
+    public Usuario atualizar(Integer id, Usuario usuario) throws BancoDeDadosException {
+        Connection con = null;
+        try {
+            con = ConexaoBancoDeDados.getConnection();
+
+            StringBuilder sql = new StringBuilder();
+            sql.append("UPDATE USUARIO SET \n");
+
+
+            if (usuario.getNome() != null) {
+                sql.append(" NOME = ?,");
+            }
+
+            if (usuario.getEmail() != null) {
+                sql.append(" EMAIL = ?,");
+            }
+
+            if (usuario.getDataNascimento() != null){
+                sql.append(" DATA_NASCIMENTO = ?,");
+            }
+
+            if (usuario.getDataCriacao() != null){
+                sql.append(" DATA_CRIACAO = ?,");
+            }
+
+            if (usuario.getSenha() != null){
+                sql.append(" SENHA = ?,");
+            }
+
+            if (usuario.getTipo() != null){
+                sql.append(" TIPO = ?,");
+            }
+
+            sql.deleteCharAt(sql.length() - 1);
+            sql.append(" WHERE ID_CLIENTE = ? ");
+
+            PreparedStatement stmt = con.prepareStatement(sql.toString());
+
+            int index = 1;
+            if(usuario.getNome() != null){
+                stmt.setString(index++, usuario.getNome());
+            }
+
+            if(usuario.getEmail() != null){
+                stmt.setString(index++, usuario.getEmail());
+            }
+
+            if(usuario.getDataNascimento() != null){
+                stmt.setDate(index++, Date.valueOf(usuario.getDataNascimento()));
+            }
+
+            if(usuario.getDataCriacao() != null){
+                stmt.setDate(index++, Date.valueOf(usuario.getDataCriacao()));
+            }
+
+            if(usuario.getSenha() != null){
+                stmt.setString(index++, usuario.getSenha());
+            }
+
+            if(usuario.getTipo() != null){
+                stmt.setInt(index++, usuario.getTipo().getTipo());
+            }
+
+
+            stmt.setInt(index, id);
+
+            // Executar consulta
+            stmt.executeUpdate();
+
+            return usuario;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new BancoDeDadosException("Erro no banco!");
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Usuario getUsuarioFromResultSet(ResultSet res) throws SQLException {
