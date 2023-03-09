@@ -1,14 +1,13 @@
 package com.dbccompany.codingdojo.codingdojo.controller;
 
+import com.dbccompany.codingdojo.codingdojo.dto.UsuarioCreateDTO;
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioDTO;
 import com.dbccompany.codingdojo.codingdojo.exceptions.RegraDeNegociosException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -58,4 +57,9 @@ public interface UsuarioDoc {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Integer id);
+
+    @PutMapping("/{id}")
+    public  ResponseEntity<UsuarioDTO> update(@PathVariable("id") @RequestBody UsuarioCreateDTO usuario);
+    @PostMapping("/")
+    public  ResponseEntity<UsuarioDTO> create(@PathVariable("id") @RequestBody UsuarioCreateDTO usuario);
 }

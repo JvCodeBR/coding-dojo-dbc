@@ -31,15 +31,15 @@ public class UsuarioRepository {
     }
 
     public List<Usuario> listarUsuariosAntigos() {
-        return ;
+        return null;
     }
 
     public List<UsuarioDTO> listaPorId(Integer id) {
-        return ;
+        return null;
     }
 
     public List<UsuarioDTO> listaPorTipo(TipoUsuario tipo) {
-        return ;
+        return null;
     }
 
     public void delete(Integer id) {
@@ -47,47 +47,47 @@ public class UsuarioRepository {
     }
 
     public List<UsuarioDTO> listar() {
-        return ;
+        return null;
     }
 
     public UsuarioDTO listarMaiorDeIdade() {
-        return ;
+        return null;
     }
 
-    public Usuario adicionar(UsuarioCreateDTO usuarioCreateDTO) throws BancoDeDadosException {
+    public Usuario adicionar(Usuario usuario) throws BancoDeDadosException {
         Connection con = null;
         try {
             con = ConexaoBancoDeDados.getConnection();
 
-            Integer proximoId = this.getProximoId(con);
-
+//            Integer proximoId = ;
+            usuario.setId(this.getProximoId(con));
             String sql = """
                     INSERT INTO USUARIO
                                 (ID, NOME, DATANASCIMENTO, SENHA, DATACRIACAO, ATIVO, TIPO)
                         VALUES(?, ?, ?, ?, ?, ?, ?)
                     """;
             PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setInt(1, proximoId);
-            stmt.setString(2, usuarioCreateDTO.getNome());
-            stmt.setDate(3, Date.valueOf(usuarioCreateDTO.getDataNascimento()));
-            stmt.setString(4, usuarioCreateDTO.getSenhha());
-            stmt.setDate(5, Date.valueOf(usuarioCreateDTO.getDataCriacao()));
+            stmt.setInt(1, usuario.getId());
+            stmt.setString(2, usuario.getNome());
+            stmt.setDate(3, Date.valueOf(usuario.getDataNascimento()));
+            stmt.setString(4, usuario.getSenha());
+            stmt.setDate(5, Date.valueOf(usuario.getDataCriacao()));
 
-            if(usuarioCreateDTO.getAtivo()) {
+            if(usuario.getAtivo()) {
                 stmt.setInt(6, 1);
             } else {
                 stmt.setInt(6, 0);
             }
 
-            stmt.setInt(7, usuarioCreateDTO.getTipo().getTipo());
+            stmt.setInt(7, usuario.getTipo().getTipo());
 
 
             // Executar consulta
-            ResultSet resultSet = stmt.executeQuery(sql);
+            int res = stmt.executeUpdate();
 
-
+            return usuario;
         } catch (SQLException e) {
-            throw new BancoDeDadosException(e.getCause());
+            throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
                 if (con != null) {
@@ -103,12 +103,12 @@ public class UsuarioRepository {
     VALUES(0, ?, ?, ?, ?, ?, ?);*/
 
     public UsuarioDTO atualizar(Integer id, UsuarioCreateDTO usuarioCreateDTO) {
-        return ;
+        return null;
     }
 
     private Usuario getUsuarioFromResultSet(ResultSet res) throws SQLException {
 
-        Usuario usuario = new Usuario;
+        Usuario usuario = new Usuario();
         usuario.setId(res.getInt("id"));
         usuario.setNome(res.getString("nome"));
         usuario.setDataNascimento(res.getDate("data_nascimento").toLocalDate());
