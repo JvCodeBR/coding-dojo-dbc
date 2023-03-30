@@ -14,7 +14,6 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Integer> {
 
      List<UsuarioEntity> findByTipo(TipoUsuario tipo);
-     List<UsuarioEntity> findAllByIdadeGreaterThan(Integer idade);
      List<UsuarioEntity> findAllByDataCriacaoBefore(LocalDate data);
      @Query("SELECT u FROM USUARIO u where DATEDIFF(CURRENT_DATE, u.dataNascimento) / 365 >= 18")
      List<UsuarioEntity> buscarUsuariosMaioresDeIdade();

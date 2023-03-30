@@ -1,5 +1,6 @@
 package com.dbccompany.codingdojo.codingdojo.service;
 
+import com.dbccompany.codingdojo.codingdojo.dto.LoginDTO;
 import com.dbccompany.codingdojo.codingdojo.dto.TipoOperacao;
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioCreateDTO;
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioDTO;
@@ -10,8 +11,14 @@ import com.dbccompany.codingdojo.codingdojo.model.TipoUsuario;
 import com.dbccompany.codingdojo.codingdojo.model.UsuarioEntity;
 import com.dbccompany.codingdojo.codingdojo.repository.LogRepository;
 import com.dbccompany.codingdojo.codingdojo.repository.UsuarioRepository;
+import com.dbccompany.codingdojo.codingdojo.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +28,25 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
     private final LogRepository logRepository;
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
+
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          ObjectMapper objectMapper,
+                          LogRepository logRepository,
+                          @Lazy AuthenticationManager authenticationManager,
+                          TokenService tokenService) {
+        this.usuarioRepository = usuarioRepository;
+        this.objectMapper = objectMapper;
+        this.logRepository = logRepository;
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
+    }
 
     public List<UsuarioDTO> listarUsuariosMaisVelhosQueSeisMeses() {
         LocalDate dataAtual = LocalDate.now();
@@ -122,4 +142,18 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
+    public String authenticate(LoginDTO loginDTO) throws RegraDeNegocioException {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getEmail(),
+                        loginDTO.getSenha()
+                );
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(usernamePasswordAuthenticationToken);
+            return tokenService.gerarToken(authentication);
+        } catch (BadCredentialsException ex) {
+            throw new RegraDeNegocioException("Credenciais inválidas!");
+        }
+    }
 }

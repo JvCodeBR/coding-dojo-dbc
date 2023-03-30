@@ -1,12 +1,14 @@
 package com.dbccompany.codingdojo.codingdojo.security;
 
 
+import com.dbccompany.codingdojo.codingdojo.model.CargoEntity;
 import com.dbccompany.codingdojo.codingdojo.model.UsuarioEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,7 @@ public class TokenService {
         String token = Jwts.builder()
                 .claim("login", usuarioEntity.getEmail())
                 .claim(Claims.ID, usuarioEntity.getId())
-               // .claim(CARGOS, usuarioEntity.getCargos().stream().map(CargoEntity::getAuthority).toList())
+                .claim(CARGOS, usuarioEntity.getCargos().stream().map(CargoEntity::getAuthority).toList())
                 .setIssuedAt(hoje)
                 .setExpiration(expiracao)
                 .signWith(SignatureAlgorithm.HS256, secret)

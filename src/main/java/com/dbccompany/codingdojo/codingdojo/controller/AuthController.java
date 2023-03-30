@@ -28,8 +28,8 @@ public class AuthController {
     private final UsuarioService usuarioService;
 
     @PostMapping // http://localhost:8080/auth
-    public String auth(@RequestBody @Valid LoginDTO loginCreateDTO) throws RegraDeNegocioException {
-        return tokenService.getToken(authenticationService.authUser(loginCreateDTO));
+    public ResponseEntity<String> auth(@RequestBody @Valid LoginDTO loginCreateDTO) throws RegraDeNegocioException {
+        return new ResponseEntity<>(usuarioService.authenticate(loginCreateDTO), HttpStatus.OK);
     }
 
     @PostMapping("/create") // http://localhost:8080/auth/create
@@ -41,5 +41,7 @@ public class AuthController {
     public ResponseEntity<UsuarioDTO> getLoggedUser() throws RegraDeNegocioException {
         return new ResponseEntity<>(usuarioService.getLoggedUser(),  HttpStatus.OK);
     }
+
+
 
 }

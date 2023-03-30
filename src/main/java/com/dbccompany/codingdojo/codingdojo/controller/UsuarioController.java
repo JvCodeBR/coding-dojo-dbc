@@ -4,6 +4,7 @@ import com.dbccompany.codingdojo.codingdojo.dto.UsuarioCreateDTO;
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioDTO;
 import com.dbccompany.codingdojo.codingdojo.exceptions.BancoDeDadosException;
 import com.dbccompany.codingdojo.codingdojo.exceptions.RegraDeNegocioException;
+import com.dbccompany.codingdojo.codingdojo.model.TipoUsuario;
 import com.dbccompany.codingdojo.codingdojo.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,20 +33,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/{tipo}/tipo")
-    public ResponseEntity<List<UsuarioDTO>> listarPorTipo(@PathVariable("tipo") String tipo) {
-//        return ResponseEntity.ok(usuarioService.listaPorTipo(tipo));
-        return null;
-    }
-
-    @GetMapping("/maior-de-idade")
-    public ResponseEntity<List<UsuarioDTO>> listarMaiorDeIdade() {
-//        return ResponseEntity.ok(usuarioService.listarMaiorDeIdade());
-        return null;
-    }
-
-    @GetMapping("/usuarios-antigos")
-    public ResponseEntity<List<UsuarioDTO>> listarUsuariosAntigos() {
-        return ResponseEntity.ok(usuarioService.listarUsuariosMaisVelhosQueSeisMeses());
+    public ResponseEntity<List<UsuarioDTO>> listarPorTipo(@PathVariable("tipo") TipoUsuario tipo) {
+        return ResponseEntity.ok(usuarioService.listaPorTipo(tipo));
     }
 
     @DeleteMapping("/{id}")
@@ -53,7 +42,6 @@ public class UsuarioController {
         usuarioService.delete(id);
         return ResponseEntity.ok().build();
     }
-
 
     @PostMapping
     public ResponseEntity<UsuarioDTO> adicionar(@Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException, BancoDeDadosException {
@@ -63,6 +51,16 @@ public class UsuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.atualizar(usuarioCreateDTO));
+    }
+
+    @GetMapping("/maior-de-idade")
+    public ResponseEntity<List<UsuarioDTO>> listarMaiorDeIdade() {
+        return ResponseEntity.ok(usuarioService.listarUsuarioIdadeMaiorIgualDezoito());
+    }
+
+    @GetMapping("/usuarios-antigos")
+    public ResponseEntity<List<UsuarioDTO>> listarUsuariosAntigos() {
+        return ResponseEntity.ok(usuarioService.listarUsuariosMaisVelhosQueSeisMeses());
     }
 
 }
