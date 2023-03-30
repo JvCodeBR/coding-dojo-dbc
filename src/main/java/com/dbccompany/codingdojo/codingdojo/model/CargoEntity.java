@@ -3,29 +3,37 @@ package com.dbccompany.codingdojo.codingdojo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Getter
 @Setter
-@Entity(name = "CARGO")
-public class CargoEntity implements {
+@Entity
+@Table(name = "CARGO")
+public class CargoEntity  implements GrantedAuthority {
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cargo")
+    @SequenceGenerator(name = "seq_cargo", sequenceName = "seq_cargo", allocationSize = 1)
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CARGO_SEQ")
-    @SequenceGenerator(name = "CARGO_SEQ", sequenceName = "seq_cargo", allocationSize = 1)
-    @Column(name = "id_cargo")
-    private Integer idCargo;
+    @Column(name = "ID_CARGO")
+    private int idCargo;
 
-    @Column(name = "nome")
+    @Column(name = "NOME")
     private String nome;
 
-    // RELACIONAMENTO COM USUARIO
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "cargos")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "CARGO_X_USUARIO",
+            joinColumns = @JoinColumn(name = "id_cargo"),
+            inverseJoinColumns = @JoinColumn(name = "id_usuario"))
     @JsonIgnore
-    private Set<UsuarioEntity> usuarios;
+    private Set<UsuarioEntity> usuarioEntities;
 
     @Override
     public String getAuthority() {
         return nome;
+        //ROLE_ADMIN
+        //ROLE_COMPANHIA
+        //ROLE_COMPRADOR
     }
 }
