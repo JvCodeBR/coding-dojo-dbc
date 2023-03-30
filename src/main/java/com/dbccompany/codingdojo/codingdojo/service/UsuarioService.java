@@ -20,6 +20,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.plaf.PanelUI;
@@ -35,17 +37,20 @@ public class UsuarioService {
     private final LogRepository logRepository;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final PasswordEncoder passwordEncoder;
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                           ObjectMapper objectMapper,
                           LogRepository logRepository,
                           @Lazy AuthenticationManager authenticationManager,
-                          TokenService tokenService) {
+                          TokenService tokenService,
+                          PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.objectMapper = objectMapper;
         this.logRepository = logRepository;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UsuarioDTO> listarUsuariosMaisVelhosQueSeisMeses() {
@@ -82,7 +87,9 @@ public class UsuarioService {
 
     public UsuarioDTO adicionar(UsuarioCreateDTO usuarioCreateDTO) throws BancoDeDadosException {
 
+        String senha = passwordEncoder.encode(usuarioCreateDTO.getSenha());
         UsuarioEntity usuario = objectMapper.convertValue(usuarioCreateDTO, UsuarioEntity.class);
+        usuario.setSenha(senha);
         UsuarioEntity usuarioEntity = usuarioRepository.save(usuario);
         LogEntity logEntity = getLog(usuario, TipoOperacao.CRIAR);
         logRepository.save(logEntity);

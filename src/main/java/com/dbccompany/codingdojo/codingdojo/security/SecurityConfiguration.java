@@ -3,12 +3,14 @@ package com.dbccompany.codingdojo.codingdojo.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,7 +30,7 @@ public class SecurityConfiguration {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests((authz) -> authz
-                        .antMatchers("/admin/**").hasRole("ADMIN")
+                        .antMatchers(HttpMethod.POST,"/usuario").hasRole("ADMIN")
                         .antMatchers("/usuario/**").hasAnyRole("NORMAL", "ADMIN")
                         .anyRequest().authenticated()
                 );
@@ -65,7 +67,7 @@ public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder encoder() {
-        return new Argon2PasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
