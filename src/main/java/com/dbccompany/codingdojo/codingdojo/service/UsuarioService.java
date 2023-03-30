@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,11 @@ public class UsuarioService {
         LocalDate dataSeisMesesAtras = dataAtual.minusMonths(6);
 
         return usuarioRepository.findAllByDataCriacaoBefore(dataSeisMesesAtras).stream()
+                .map(usuarioEntity -> objectMapper.convertValue(usuarioEntity, UsuarioDTO.class)).toList();
+    }
+
+    public List<UsuarioDTO> listarUsuarioIdadeMaiorIgualDezoito(){
+        return usuarioRepository.buscarUsuariosMaioresDeIdade().stream()
                 .map(usuarioEntity -> objectMapper.convertValue(usuarioEntity, UsuarioDTO.class)).toList();
     }
 
@@ -76,6 +82,10 @@ public class UsuarioService {
         UsuarioEntity usuario = usuarioRepository.findById(id)
                 .orElseThrow(()->new RegraDeNegocioException("Usuário não encontrado!"));
         usuarioRepository.delete(usuario);
+    }
+
+    public Optional<UsuarioEntity> buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email);
     }
 
 }

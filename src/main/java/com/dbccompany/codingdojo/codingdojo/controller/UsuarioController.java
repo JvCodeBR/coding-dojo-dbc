@@ -45,7 +45,7 @@ public class UsuarioController {
 
     @GetMapping("/usuarios-antigos")
     public ResponseEntity<List<UsuarioDTO>> listarUsuariosAntigos() {
-        return ResponseEntity.ok(usuarioService.listarUsuariosAntigos());
+        return ResponseEntity.ok(usuarioService.listarUsuariosMaisVelhosQueSeisMeses());
     }
 
     @DeleteMapping("/{id}")
@@ -61,8 +61,8 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable("id") Integer id, @Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
-        return ResponseEntity.ok(usuarioService.atualizar(id, usuarioCreateDTO));
+    public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
+        return ResponseEntity.ok(usuarioService.atualizar(usuarioCreateDTO));
     }
 
 }

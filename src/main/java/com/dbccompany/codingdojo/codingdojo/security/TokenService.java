@@ -4,10 +4,13 @@ import com.dbccompany.codingdojo.codingdojo.model.UsuarioEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -29,9 +32,9 @@ public class TokenService {
         Date expiracao = new Date(hoje.getTime() + Long.parseLong(expiration));
 
         String token = Jwts.builder()
-                .claim("login", usuarioEntity.getLogin())
-                .claim(Claims.ID, usuarioEntity.getIdUsuario())
-                .claim(CARGOS, usuarioEntity.getCargos().stream().map(CargoEntity::getAuthority).toList())
+                .claim("login", usuarioEntity.getEmail())
+                .claim(Claims.ID, usuarioEntity.getId())
+               // .claim(CARGOS, usuarioEntity.getCargos().stream().map(CargoEntity::getAuthority).toList())
                 .setIssuedAt(hoje)
                 .setExpiration(expiracao)
                 .signWith(SignatureAlgorithm.HS256, secret)

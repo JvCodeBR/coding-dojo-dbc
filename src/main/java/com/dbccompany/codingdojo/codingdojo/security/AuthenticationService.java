@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService implements UserDetailsService {
@@ -15,7 +17,7 @@ public class AuthenticationService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UsuarioEntity> usuario = usuarioService.findByLogin(username);
+        Optional<UsuarioEntity> usuario = usuarioService.buscarPorEmail(username);
         return usuario.orElseThrow(() -> new UsernameNotFoundException("Usuário inválido!"));
     }
 }
