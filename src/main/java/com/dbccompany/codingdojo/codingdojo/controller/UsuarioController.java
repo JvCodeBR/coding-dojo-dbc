@@ -3,7 +3,7 @@ package com.dbccompany.codingdojo.codingdojo.controller;
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioCreateDTO;
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioDTO;
 import com.dbccompany.codingdojo.codingdojo.exceptions.BancoDeDadosException;
-import com.dbccompany.codingdojo.codingdojo.exceptions.RegraDeNegociosException;
+import com.dbccompany.codingdojo.codingdojo.exceptions.RegraDeNegocioException;
 import com.dbccompany.codingdojo.codingdojo.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>>  listar() throws RegraDeNegociosException {
+    public ResponseEntity<List<UsuarioDTO>>  listar() throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.listar());
     }
 
@@ -49,19 +49,19 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) throws RegraDeNegociosException {
+    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) throws RegraDeNegocioException {
         usuarioService.delete(id);
         return ResponseEntity.ok().build();
     }
 
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> adicionar(@Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegociosException {
+    public ResponseEntity<UsuarioDTO> adicionar(@Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.adicionar(usuarioCreateDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable("id") Integer id, @Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegociosException {
+    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable("id") Integer id, @Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
         return ResponseEntity.ok(usuarioService.atualizar(id, usuarioCreateDTO));
     }
 

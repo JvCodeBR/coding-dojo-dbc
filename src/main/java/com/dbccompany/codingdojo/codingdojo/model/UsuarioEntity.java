@@ -16,7 +16,7 @@ public class UsuarioEntity {
     @Column(name = "ID_USUARIO")
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USUARIO_SEQ")
-    @SequenceGenerator(name = "USUARIO_SEQ", sequenceName = "USUARIO_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "USUARIO_SEQ", sequenceName = "SEQ_USUARIO", allocationSize = 1)
     private Integer id;
 
     @Column(name = "NOME")

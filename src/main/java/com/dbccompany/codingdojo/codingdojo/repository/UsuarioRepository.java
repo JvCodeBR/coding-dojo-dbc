@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Integer> {
 
-
      List<UsuarioEntity> findByTipo(TipoUsuario tipo);
-
+     List<UsuarioEntity> findAllByIdadeGreaterThan(Integer idade);
+     List<UsuarioEntity> findAllByDataCriacaoBefore(LocalDate data);
 }

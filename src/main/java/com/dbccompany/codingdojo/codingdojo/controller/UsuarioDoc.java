@@ -2,15 +2,13 @@ package com.dbccompany.codingdojo.codingdojo.controller;
 
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioCreateDTO;
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioDTO;
-import com.dbccompany.codingdojo.codingdojo.exceptions.RegraDeNegociosException;
+import com.dbccompany.codingdojo.codingdojo.exceptions.RegraDeNegocioException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 public interface UsuarioDoc {
@@ -23,7 +21,7 @@ public interface UsuarioDoc {
             }
     )
     @GetMapping(value = "/")
-    public ResponseEntity<List<UsuarioDTO>>  listar() throws RegraDeNegociosException;
+    public ResponseEntity<List<UsuarioDTO>>  listar() throws RegraDeNegocioException;
     @Operation(summary = "Buscar usuário por id", description = "Busca usuário com o id informado")
     @ApiResponses(
             value = {
