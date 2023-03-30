@@ -1,13 +1,17 @@
 package com.dbccompany.codingdojo.codingdojo.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -25,16 +29,7 @@ public class SecurityConfiguration {
                 .csrf().disable()
                 .authorizeHttpRequests((authz) -> authz
                         .antMatchers("/admin/**").hasRole("ADMIN")
-                        .antMatchers("/contato/**",
-                                "/endereco/**",
-                                "/conta/**",
-                                "/compra/**",
-                                "/cartao/**",
-                                "/item/**",
-                                "/cliente/**",
-                                "/transferencia/**").hasRole("CLIENTE")
-                        .antMatchers(HttpMethod.PUT, "/usuario").hasAnyRole("CLIENTE", "ADMIN")
-
+                        .antMatchers("/usuario/**").hasAnyRole("NORMAL", "ADMIN")
                         .anyRequest().authenticated()
                 );
 
@@ -53,10 +48,8 @@ public class SecurityConfiguration {
                         "/v3/api-docs/**",
                         "/swagger-resources/**",
                         "/swagger-ui/**",
-                        "/auth")
-                .antMatchers(HttpMethod.POST, "/conta");
+                        "/auth");
     }
-
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

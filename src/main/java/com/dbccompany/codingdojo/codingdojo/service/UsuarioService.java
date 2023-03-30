@@ -84,6 +84,10 @@ public class UsuarioService {
         return logEntity;
     }
 
+    public UsuarioDTO getLoggedUser() {
+        Optional<UsuarioEntity> usuarioOptional = usuarioRepository.findById(obterIdUsuarioLogado());
+        return objectMapper.convertValue(usuarioOptional, UsuarioDTO.class);
+    }
 
     public UsuarioDTO atualizar(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
         Integer idUsuario = obterIdUsuarioLogado();

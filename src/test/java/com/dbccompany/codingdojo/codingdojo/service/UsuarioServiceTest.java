@@ -1,6 +1,10 @@
 package com.dbccompany.codingdojo.codingdojo.service;
 
 import com.dbccompany.codingdojo.codingdojo.dto.UsuarioCreateDTO;
+import com.dbccompany.codingdojo.codingdojo.dto.UsuarioDTO;
+import com.dbccompany.codingdojo.codingdojo.exceptions.BancoDeDadosException;
+import com.dbccompany.codingdojo.codingdojo.exceptions.RegraDeNegocioException;
+import com.dbccompany.codingdojo.codingdojo.model.CargoEntity;
 import com.dbccompany.codingdojo.codingdojo.model.TipoUsuario;
 import com.dbccompany.codingdojo.codingdojo.model.UsuarioEntity;
 import com.dbccompany.codingdojo.codingdojo.repository.UsuarioRepository;
@@ -23,6 +27,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UsuarioServiceTest {
@@ -33,6 +46,8 @@ public class UsuarioServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private CargoService cargoService;
     private ObjectMapper objectMapper = new ObjectMapper();
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -48,12 +63,9 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void deveCriarComSucesso() {
+    public void deveCriarComSucesso() throws RegraDeNegocioException, BancoDeDadosException {
         // setup
-        UsuarioCreateDTO usuarioCreateDTO = new UsuarioCreateDTO();
-        usuarioCreateDTO.setLogin("canova");
-        usuarioCreateDTO.setSenha("123456");
-
+        UsuarioCreateDTO usuarioCreateDTOMock =  getUsuarioCreateDTO();
         UsuarioEntity usuario = getUsuarioEntity();
 
         Set<UsuarioEntity> setUsuarios = new HashSet<>();
@@ -61,19 +73,34 @@ public class UsuarioServiceTest {
         CargoEntity cargo = new CargoEntity();
         cargo.setNome("ROLE_CLIENTE");
         cargo.setIdCargo(1);
-        cargo.setUsuarios(setUsuarios);
+        cargo.setUsuarioEntities(setUsuarios);
 
 
-        when(usuarioService.findByLogin(any())).thenReturn(Optional.empty());
+        when(usuarioService.buscarPorEmail(any())).thenReturn(Optional.empty());
 
         when(cargoService.pegaCargoPeloNome(any())).thenReturn(cargo);
 
         when(usuarioRepository.save(any())).thenReturn(usuario);
 
-        UsuarioEntity resultado = usuarioService.criarUsuario(usuarioCreateDTO);
+        UsuarioDTO resultado = usuarioService.adicionar(usuarioCreateDTOMock);
 
         assertEquals("Abacaxi", resultado.getSenha());
 
+    }
+
+    @Test
+    public void deveListarPorId() throws BancoDeDadosException {
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+
+        when(usuarioRepository.findById(anyInt())).thenReturn(Optional.of(usuarioEntity));
+
+        UsuarioDTO usuarioDTO = usuarioService.listaPorId(usuarioEntity.getId());
+
+        assertNotNull(usuarioDTO);
+        assertEquals(usuarioEntity.getNome(), usuarioDTO.getNome());
+        assertEquals(usuarioEntity.getId(), usuarioDTO.getId());
+        assertEquals(usuarioEntity.getEmail(), usuarioDTO.getEmail());
+        assertEquals(usuarioEntity.getDataNascimento(), usuarioDTO.getDataNascimento());
     }
 
     protected static UsuarioEntity getUsuarioEntity() {
@@ -100,10 +127,10 @@ public class UsuarioServiceTest {
         Authentication authentication = Mockito.mock(Authentication.class);
 
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
 
         SecurityContextHolder.setContext(securityContext);
-        Mockito.when(authentication.getPrincipal()).thenReturn(idUsuarioToken);
+        when(authentication.getPrincipal()).thenReturn(idUsuarioToken);
     }
 
 }
