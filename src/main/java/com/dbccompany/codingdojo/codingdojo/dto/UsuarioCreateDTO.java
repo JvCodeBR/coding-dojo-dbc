@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @Data
 public class UsuarioCreateDTO {
 
-
     private String nome;
     private String email;
     private LocalDate dataNascimento;

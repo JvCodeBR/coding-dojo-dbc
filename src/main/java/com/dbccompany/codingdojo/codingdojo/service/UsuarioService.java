@@ -5,7 +5,7 @@ import com.dbccompany.codingdojo.codingdojo.dto.UsuarioDTO;
 import com.dbccompany.codingdojo.codingdojo.exceptions.BancoDeDadosException;
 import com.dbccompany.codingdojo.codingdojo.exceptions.RegraDeNegociosException;
 import com.dbccompany.codingdojo.codingdojo.model.TipoUsuario;
-import com.dbccompany.codingdojo.codingdojo.model.Usuario;
+import com.dbccompany.codingdojo.codingdojo.model.UsuarioEntity;
 import com.dbccompany.codingdojo.codingdojo.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,21 +27,20 @@ public class UsuarioService {
     }
 
     public UsuarioDTO listaPorId(Integer id) throws BancoDeDadosException {
-        return objectMapper.convertValue(usuarioRepository.listarPorID(id),UsuarioDTO.class);
+        UsuarioEntity usuario =  usuarioRepository.findById(id).orElseThrow(()->new BancoDeDadosException("Usuario não encontrado!"));
+        return objectMapper.convertValue(usuario, UsuarioDTO.class);
     }
 
     public List<UsuarioDTO> listaPorTipo(TipoUsuario tipo) {
-        return this.usuarioRepository.listaPorTipo(tipo);
+        List<UsuarioEntity> usuarioEntities = this.usuarioRepository.findByTipo(tipo);
+        return usuarioEntities.stream()
+                .map(usuarioEntity -> objectMapper.convertValue(usuarioEntity, UsuarioDTO.class))
+                .toList();
     }
 
-    public boolean delete(Integer id) throws RegraDeNegociosException {
-        try {
-            return this.usuarioRepository.delete(id);
-        } catch (BancoDeDadosException e){
-            e.printStackTrace();
-            throw new RegraDeNegociosException("Erro no banco!");
-        }
-
+    public void delete(Integer id) throws RegraDeNegociosException {
+        UsuarioEntity usuario = usuarioRepository.findById(id).orElseThrow(()->new RegraDeNegociosException("Usuário não encontrado!"));
+        usuarioRepository.delete(usuario);
     }
 
     public List<UsuarioDTO> listar() throws RegraDeNegociosException {
@@ -63,7 +62,7 @@ public class UsuarioService {
     public UsuarioDTO adicionar(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegociosException {
         try {
             return objectMapper.convertValue(
-                    this.usuarioRepository.adicionar(objectMapper.convertValue(usuarioCreateDTO, Usuario.class)),
+                    this.usuarioRepository.adicionar(objectMapper.convertValue(usuarioCreateDTO, UsuarioEntity.class)),
                     UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegociosException("Erro no banco!");
@@ -72,7 +71,7 @@ public class UsuarioService {
 
     public UsuarioDTO atualizar(Integer id, UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegociosException {
         try {
-            Usuario usuario = objectMapper.convertValue(usuarioCreateDTO, Usuario.class);
+            UsuarioEntity usuario = objectMapper.convertValue(usuarioCreateDTO, UsuarioEntity.class);
             return objectMapper.convertValue(usuarioRepository.atualizar(id, usuario), UsuarioDTO.class);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegociosException("Erro no banco!");

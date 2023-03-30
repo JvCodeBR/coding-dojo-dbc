@@ -49,8 +49,9 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable("id") Integer id) throws RegraDeNegociosException {
-        return ResponseEntity.ok(usuarioService.delete(id));
+    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) throws RegraDeNegociosException {
+        usuarioService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
 
